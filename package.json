@@ -1,0 +1,37 @@
+{
+  "name": "software-development-final-project",
+  "version": "1.0.0",
+  "description": "A lightweight, self-hostable web-based IT Asset & Support Ticket Management System (Express + Sequelize + EJS).",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "jest --coverage"
+  },
+  "keywords": [
+    "itsm",
+    "helpdesk",
+    "asset-management",
+    "express",
+    "sequelize"
+  ],
+  "author": "Keegan Ringnalda",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "sequelize": "^6.37.5",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "jest": "^30.0.3",
+    "supertest": "^7.3.2"
+  },
+  "allowScripts": {
+    "sqlite3@5.1.7": true
+  }
+}
