@@ -7,7 +7,7 @@ const requireLogin = require('../middleware/requireLogin');
 const router = express.Router();
 
 // every asset page needs a login
-router.use(requireLogin);
+router.use('/assets', requireLogin);
 
 // list all assets
 router.get('/assets', async (req, res) => {

@@ -31,6 +31,14 @@
     "jest": "^30.0.3",
     "supertest": "^7.3.2"
   },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageThreshold": {
+      "global": {
+        "lines": 80
+      }
+    }
+  },
   "allowScripts": {
     "sqlite3@5.1.7": true
   }
