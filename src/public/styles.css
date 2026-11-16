@@ -71,7 +71,9 @@ input, select, textarea {
 
 textarea { min-height: 6rem; }
 
-button {
+button,
+a.button {
+  display: inline-block;
   padding: 0.5rem 1rem;
   font: inherit;
   color: #fff;
@@ -79,9 +81,11 @@ button {
   border: 1px solid var(--accent);
   border-radius: 4px;
   cursor: pointer;
+  text-decoration: none;
 }
 
-button:hover { filter: brightness(1.1); }
+button:hover,
+a.button:hover { filter: brightness(1.1); }
 
 /* a form that sits inline with text (the delete / resolve buttons) */
 form.inline { display: inline; }
