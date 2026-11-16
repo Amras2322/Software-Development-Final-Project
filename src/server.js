@@ -6,7 +6,7 @@ const authRoutes = require('./routes/auth');
 const assetRoutes = require('./routes/assets');
 const ticketRoutes = require('./routes/tickets');
 const requireLogin = require('./middleware/requireLogin');
-const { sequelize } = require('./models');
+const { sequelize, Ticket, Asset } = require('./models');
 
 const app = express();
 const PORT = 3000;
@@ -35,9 +35,14 @@ app.use(session({
 // register / login / logout
 app.use(authRoutes);
 
-// dashboard (only for logged-in users)
-app.get('/dashboard', requireLogin, (req, res) => {
-    res.render('dashboard', { title: 'Dashboard' });
+// dashboard (only for logged-in users): open tickets grouped by priority
+app.get('/dashboard', requireLogin, async (req, res) => {
+    const open = await Ticket.findAll({ where: { status: 'Open' }, include: [Asset] });
+
+    const byPriority = { High: [], Medium: [], Low: [] };
+    open.forEach((ticket) => byPriority[ticket.priority].push(ticket));
+
+    res.render('dashboard', { title: 'Dashboard', byPriority });
 });
 
 // asset pages
