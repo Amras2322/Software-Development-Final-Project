@@ -20,7 +20,21 @@ support tickets without the bloat.
 
 ## Screenshots
 
-_coming soon_
+The dashboard groups open tickets by priority:
+
+![Dashboard — open tickets grouped by High, Medium, and Low priority](docs/screenshots/dashboard.png)
+
+A ticket, linked to its hardware asset:
+
+![Ticket detail page](docs/screenshots/ticket-detail.png)
+
+All tickets, including resolved ones:
+
+![Ticket list](docs/screenshots/tickets.png)
+
+The hardware assets:
+
+![Assets list](docs/screenshots/assets.png)
 
 ## Tech stack
 
