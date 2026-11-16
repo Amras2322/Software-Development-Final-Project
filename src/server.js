@@ -4,6 +4,7 @@ const session = require('express-session');
 
 const authRoutes = require('./routes/auth');
 const assetRoutes = require('./routes/assets');
+const ticketRoutes = require('./routes/tickets');
 const requireLogin = require('./middleware/requireLogin');
 const { sequelize } = require('./models');
 
@@ -41,6 +42,9 @@ app.get('/dashboard', requireLogin, (req, res) => {
 
 // asset pages
 app.use(assetRoutes);
+
+// ticket pages
+app.use(ticketRoutes);
 
 // Only start server when running directly, not when testing
 if (require.main === module) {
