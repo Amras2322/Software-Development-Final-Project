@@ -1,70 +1,156 @@
-# Software Development Final Project
+# IT Asset & Ticket Manager
 
 A lightweight, self-hostable, web-based **IT Asset & Support Ticket Management System**.
 
+**Live app:** _(add your Render URL here once it's deployed)_
+
 Enterprise ITSM suites (Jira Service Management, ServiceNow, Snipe-IT) are powerful but
-heavy, expensive, and complex. For solo sysadmins, freelance network engineers, and
-homelab environments that is overkill. This project provides a streamlined, low-overhead
-way to track basic hardware assets and support tickets without the bloat.
+heavy, expensive, and complex — overkill for a solo sysadmin, a freelance network engineer,
+or a homelab. This project is a streamlined, low-overhead way to track hardware assets and
+support tickets without the bloat.
 
-## Problem & Vision
+## Features
 
-Targeted at solo sysadmins and homelab enthusiasts, the core value proposition is a fast,
-easily deployable CRUD application for daily IT operations. Success is defined by the
-ability to create tickets, link them to specific hardware assets, and securely
-authenticate users in a live, deployed web environment with page loads under two seconds.
+- **Accounts** — register, log in, log out. Passwords are stored as bcrypt hashes, never in plain text.
+- **Assets** — create, list, edit, and delete hardware (laptops, switches, servers…).
+- **Tickets** — create, list, view, edit, resolve, and delete support tickets.
+- **Linking** — a ticket can point at a specific hardware asset.
+- **Dashboard** — open tickets grouped by **High / Medium / Low** priority; resolved tickets drop off.
+- **Audit trail** — every ticket status change is recorded with a timestamp.
 
-## Planned Stack
+## Screenshots
 
-| Layer           | Choice                                      |
-|-----------------|---------------------------------------------|
-| Backend         | Node.js + Express                           |
-| Frontend        | Server-rendered EJS + Pico.css              |
-| Database        | SQLite (via Sequelize)                      |
-| Design patterns | MVC + Observer (audit logging)              |
-| CI/CD           | GitHub Actions                              |
-| Deployment      | Render                                      |
+_(add screenshots here — the dashboard, a ticket, and the assets list)_
 
-## Project Status
+## Tech stack
 
-Sprint 1 (MVP) — **in progress**. The MVP scope is: database schema, secure user
-authentication, and a working dashboard, deployed to a public URL.
+| Layer       | Choice                                  |
+|-------------|-----------------------------------------|
+| Runtime     | Node.js + Express 5                     |
+| Views       | Server-rendered EJS                     |
+| Database    | SQLite (via Sequelize)                  |
+| Styling     | Hand-written CSS (`src/public/styles.css`) |
+| Tests       | Jest + Supertest                        |
+| CI          | GitHub Actions                          |
+| Deployment  | Render                                  |
 
-## Getting Started
+## Architecture
 
-Requires Node.js 20+.
+The app follows **MVC**:
 
-```bash
-# 1. Install dependencies
-npm install
+| Part       | Where         | Job                                                        |
+|------------|---------------|------------------------------------------------------------|
+| Model      | `src/models/` | Sequelize models and the SQLite connection (`src/db.js`)   |
+| View       | `src/views/`  | EJS templates plus shared partials (header/nav/footer)     |
+| Controller | `src/routes/` | Express routers that handle requests and talk to the models |
 
-# 2. Create a local environment file
-cp .env.example .env
-# then set a real SESSION_SECRET
+`src/server.js` wires it together: static files, sessions, the view engine, the routers, and
+the database sync on startup.
 
-# 3. Run the app (http://localhost:3000)
-npm start        # or: npm run dev  (auto-reload)
+### Design patterns
 
-# 4. Run the test suite
-npm test
+**MVC** — the data layer (`models/`), the request-handling layer (`routes/`), and the
+presentation layer (`views/`) are kept separate, so a change to one rarely touches the others.
+
+**Observer** — when a ticket's status changes, the ticket route *announces* it and an
+independent listener writes the audit row:
+
+```js
+// announce (src/routes/tickets.js)
+ticketEvents.emit('ticket:statusChanged', { ticketId, from, to });
+
+// listen (src/audit/observer.js)
+ticketEvents.on('ticket:statusChanged', ({ ticketId, from, to }) => {
+    AuditLog.create({ ticketId, action: 'status_changed', detail: `${from} -> ${to}` });
+});
 ```
 
-## Project Structure
+The ticket code knows nothing about logging, so another reaction (for example, emailing an
+admin when a High ticket is resolved) could be added without touching it.
+
+## Project structure
 
 ```
 src/
-  app.js            Express application factory
-  server.js         Server entrypoint
-  config.js         Environment-driven configuration
-  db.js             Sequelize instance (data layer)
-  models/           Sequelize models (Model)
-  controllers/      Request handlers (Controller)
-  routes/           URL -> controller mapping (Controller)
-  views/            EJS templates (View)
-  public/           Static assets (CSS)
-tests/              Jest + Supertest tests
+  server.js            Express app: static files, sessions, routes, database sync
+  db.js                Sequelize connection (SQLite)
+  models/              User, Asset, Ticket, AuditLog + their relationships
+  routes/              auth, assets, and tickets routers
+  views/               EJS templates + partials (shared header/nav/footer)
+  public/              styles.css
+  auth/passwords.js    bcrypt hash / verify helpers
+  middleware/          requireLogin
+  audit/observer.js    the Observer pattern
+tests/                 Jest + Supertest tests
 ```
 
-## Documentation
+## Getting started
 
-Setup, usage, architecture, and testing documentation will be expanded as the MVP is built.
+Requires **Node.js 20+**.
+
+```bash
+npm install
+npm start          # http://localhost:3000   (npm run dev auto-reloads)
+npm test           # runs the tests with coverage
+```
+
+### Environment variables
+
+| Variable         | Default                | Purpose                                              |
+|------------------|------------------------|------------------------------------------------------|
+| `PORT`           | `3000`                 | Port to listen on                                    |
+| `SESSION_SECRET` | `dev-secret-change-me` | Signs session cookies — **set a real one in production** |
+| `NODE_ENV`       | `development`          | `test` uses a throwaway in-memory database           |
+| `DB_STORAGE`     | `./instance/app.db`    | Where the SQLite file lives                          |
+
+## Usage
+
+1. Open the app and click **Register** to create an account (you're logged in automatically).
+2. Go to **Assets → Add asset** and record some hardware.
+3. Go to **Tickets → Add ticket**, give it a title and priority, and link it to an asset.
+4. The **Dashboard** lists open tickets under High / Medium / Low. Resolving a ticket removes
+   it from the dashboard and writes an audit row.
+
+## Testing
+
+```bash
+npm test
+```
+
+39 tests (Jest + Supertest) cover the models, authentication, both CRUD areas, the observer,
+and the dashboard. Line coverage is around **95%**, and Jest is configured to **fail the run
+if coverage drops below 80%**, so it can't silently slip. GitHub Actions runs the suite on
+every push and pull request.
+
+## Deployment
+
+Deployed on **Render** as a Node web service:
+
+- **Build command:** `npm install`
+- **Start command:** `npm start`
+- **Environment:** set `SESSION_SECRET` to a long random value and `NODE_ENV=production`
+
+> **Data persistence:** Render's filesystem is ephemeral, so the SQLite file resets whenever
+> the service restarts or redeploys. That's fine for an MVP demo; for real use you'd attach a
+> persistent disk or migrate to PostgreSQL.
+
+## Known limitations
+
+- The audit write is fire-and-forget, so a failed write wouldn't be reported anywhere.
+- SQLite on Render's ephemeral disk means data doesn't survive a redeploy (see above).
+- No CSRF protection on the forms.
+- No password strength rules and no email verification.
+- A resolved ticket can't be reopened.
+- A single role — everyone who logs in has full access.
+
+## Troubleshooting
+
+- **Port 3000 already in use** — something else is on that port (`lsof -iTCP:3000`); stop it or set `PORT`.
+- **`Cannot find module 'sqlite3'`** — run `npm install`; it's a native module that builds on install.
+- **Logged out on every request** — `SESSION_SECRET` is missing or changing between restarts.
+
+## Future improvements
+
+From the original project plan: SSO/LDAP login, a REST API so scripts can open tickets
+automatically (e.g. a homelab router reporting a dead server), PostgreSQL with role-based
+access control, and reopening resolved tickets.
