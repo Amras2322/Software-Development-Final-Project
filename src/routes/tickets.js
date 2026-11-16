@@ -7,7 +7,7 @@ const { ticketEvents } = require('../audit/observer');
 const router = express.Router();
 
 // every ticket page needs a login
-router.use(requireLogin);
+router.use('/tickets', requireLogin);
 
 // used to fill the "asset" dropdown
 function assetOptions() {
