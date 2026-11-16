@@ -32,8 +32,19 @@ app.use(session({
     },
 }));
 
+// tell every template whether someone is logged in (drives the nav)
+app.use((req, res, next) => {
+    res.locals.loggedIn = Boolean(req.session.userId);
+    next();
+});
+
 // register / login / logout
 app.use(authRoutes);
+
+// landing page
+app.get('/', (req, res) => {
+    res.render('index', { title: 'Home' });
+});
 
 // dashboard (only for logged-in users): open tickets grouped by priority
 app.get('/dashboard', requireLogin, async (req, res) => {

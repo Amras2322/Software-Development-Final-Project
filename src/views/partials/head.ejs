@@ -9,5 +9,19 @@
 <body>
   <header>
     <h1><a href="/">IT Asset &amp; Ticket Manager</a></h1>
+
+    <nav>
+      <% if (loggedIn) { %>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/tickets">Tickets</a>
+        <a href="/assets">Assets</a>
+        <form method="post" action="/logout">
+          <button type="submit">Log out</button>
+        </form>
+      <% } else { %>
+        <a href="/login">Log in</a>
+        <a href="/register">Register</a>
+      <% } %>
+    </nav>
   </header>
   <main>
