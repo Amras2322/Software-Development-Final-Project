@@ -9,7 +9,7 @@ const requireLogin = require('./middleware/requireLogin');
 const { sequelize, Ticket, Asset } = require('./models');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // render EJS templates from src/views
 app.set('view engine', 'ejs');

@@ -5,7 +5,9 @@ const { Sequelize } = require("sequelize");
 
 // tests get a throwaway in-memory db, otherwise a file in ./instance
 const isTest = process.env.NODE_ENV === "test";
-const storage = isTest ? ":memory:" : path.join(__dirname, "..", "instance", "app.db");
+const storage = isTest
+  ? ":memory:"
+  : process.env.DB_STORAGE || path.join(__dirname, "..", "instance", "app.db");
 
 // sqlite makes the file but not the folder, so create it first
 if (!isTest) {
