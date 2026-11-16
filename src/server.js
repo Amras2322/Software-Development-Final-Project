@@ -1,9 +1,11 @@
+const path = require('path');
 const express = require('express');
 
 const app = express();
 const PORT = 3000;
 
-app.use(express.static(__dirname));
+// serve the front end out of src/public (keeps our source files private)
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 // Only start server when running directly, not when testing
