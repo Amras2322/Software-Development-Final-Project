@@ -2,8 +2,15 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 
+const authRoutes = require('./routes/auth');
+const { sequelize } = require('./models');
+
 const app = express();
 const PORT = 3000;
+
+// render EJS templates from src/views
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // serve the front end out of src/public (keeps our source files private)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -22,12 +29,16 @@ app.use(session({
     },
 }));
 
-
+// register / login / logout
+app.use(authRoutes);
 
 // Only start server when running directly, not when testing
 if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`IT Asset & Ticket Manager server running at http://localhost:${PORT}`);
+    // create any missing tables, then start listening
+    sequelize.sync().then(() => {
+        app.listen(PORT, () => {
+            console.log(`IT Asset & Ticket Manager server running at http://localhost:${PORT}`);
+        });
     });
 }
 
