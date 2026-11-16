@@ -1,8 +1,39 @@
-<%- include('partials/head', { title: 'Dashboard' }) %>
+<%- include('partials/head', { title: title }) %>
 
 <h2>Dashboard</h2>
 
-<p>You're logged in. Open tickets will show up here once the ticket pages exist.</p>
+<p>
+  <a href="/tickets/new" role="button">Add ticket</a>
+  <a href="/tickets">All tickets</a>
+  <a href="/assets">Assets</a>
+</p>
+
+<% ['High', 'Medium', 'Low'].forEach(function (priority) { %>
+  <h3><%= priority %></h3>
+
+  <% if (byPriority[priority].length === 0) { %>
+    <p><small>No open tickets.</small></p>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr><th>Title</th><th>Asset</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% byPriority[priority].forEach(function (ticket) { %>
+          <tr>
+            <td><a href="/tickets/<%= ticket.id %>"><%= ticket.title %></a></td>
+            <td><%= ticket.Asset ? ticket.Asset.name : "-" %></td>
+            <td>
+              <form method="post" action="/tickets/<%= ticket.id %>/resolve" class="inline">
+                <button type="submit">Resolve</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+<% }); %>
 
 <form method="post" action="/logout">
   <button type="submit">Log out</button>
