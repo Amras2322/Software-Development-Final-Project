@@ -1,0 +1,32 @@
+<%- include('../partials/head', { title: title }) %>
+
+<h2>Assets</h2>
+
+<p><a href="/assets/new" role="button">Add asset</a></p>
+
+<% if (assets.length === 0) { %>
+  <p>No assets yet.</p>
+<% } else { %>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Type</th><th>Serial</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% assets.forEach(function (asset) { %>
+        <tr>
+          <td><%= asset.name %></td>
+          <td><%= asset.type %></td>
+          <td><%= asset.serialNumber || "-" %></td>
+          <td>
+            <a href="/assets/<%= asset.id %>/edit">Edit</a>
+            <form method="post" action="/assets/<%= asset.id %>/delete" class="inline">
+              <button type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+<% } %>
+
+<%- include('../partials/footer') %>

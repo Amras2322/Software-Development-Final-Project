@@ -1,0 +1,40 @@
+<%- include('../partials/head', { title: title }) %>
+
+<h2><%= ticket && ticket.id ? "Edit ticket" : "New ticket" %></h2>
+
+<% if (error) { %>
+  <p class="error"><%= error %></p>
+<% } %>
+
+<form method="post" action="<%= ticket && ticket.id ? '/tickets/' + ticket.id : '/tickets' %>">
+  <label>Title
+    <input type="text" name="title" value="<%= ticket ? ticket.title : '' %>" required>
+  </label>
+
+  <label>Description
+    <textarea name="description"><%= ticket && ticket.description ? ticket.description : '' %></textarea>
+  </label>
+
+  <label>Priority
+    <select name="priority">
+      <% priorities.forEach(function (p) { %>
+        <option value="<%= p %>" <%= ticket && ticket.priority === p ? 'selected' : '' %>><%= p %></option>
+      <% }); %>
+    </select>
+  </label>
+
+  <label>Asset
+    <select name="assetId">
+      <option value="">(none)</option>
+      <% assets.forEach(function (asset) { %>
+        <option value="<%= asset.id %>" <%= ticket && String(ticket.assetId) === String(asset.id) ? 'selected' : '' %>><%= asset.name %></option>
+      <% }); %>
+    </select>
+  </label>
+
+  <button type="submit">Save</button>
+</form>
+
+<p><a href="/tickets">Back to tickets</a></p>
+
+<%- include('../partials/footer') %>
