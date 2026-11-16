@@ -2,7 +2,7 @@
 
 A lightweight, self-hostable, web-based **IT Asset & Support Ticket Management System**.
 
-**Live app:** _coming soon_
+**Live app:** https://software-development-final-project.onrender.com
 
 Enterprise ITSM suites (Jira Service Management, ServiceNow, Snipe-IT) are powerful but
 heavy, expensive, and complex — overkill for a solo sysadmin, a freelance network engineer,
