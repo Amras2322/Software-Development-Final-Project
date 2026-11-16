@@ -1,0 +1,27 @@
+<%- include('../partials/head', { title: title }) %>
+
+<h2><%= ticket.title %></h2>
+
+<p>
+  <strong>Priority:</strong> <%= ticket.priority %> &nbsp;
+  <strong>Status:</strong> <%= ticket.status %>
+</p>
+
+<p><strong>Asset:</strong> <%= ticket.Asset ? ticket.Asset.name : "none" %></p>
+
+<% if (ticket.description) { %>
+  <p><%= ticket.description %></p>
+<% } %>
+
+<% if (ticket.status !== 'Resolved') { %>
+  <form method="post" action="/tickets/<%= ticket.id %>/resolve" class="inline">
+    <button type="submit">Mark resolved</button>
+  </form>
+<% } %>
+
+<p>
+  <a href="/tickets/<%= ticket.id %>/edit">Edit</a> |
+  <a href="/tickets">Back to tickets</a>
+</p>
+
+<%- include('../partials/footer') %>
